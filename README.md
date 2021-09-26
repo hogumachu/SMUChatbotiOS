@@ -50,6 +50,40 @@ func appear(_ label: UILabel, duration: TimeInterval) -> Observable<Void> {
 * `imageView`는 그림자로 입체감을 주었음
 * cell 의 가장 우측에는 챗봇을 시작할 수 있는 cell 로 설정
 
+## InfoDetailTeamViewController
+<img src = "https://user-images.githubusercontent.com/74225754/134793519-4463690d-03a4-421b-a46f-a808609eb7e3.gif" width="30%" height="30%"> 
+
+* 채팅해조 팀에 대한 설명
+* `Kingfisher` 의 `AnimatedImageView` 이용
+* gif 이미지를 읽어서 화면에 띄워줌
+
+## InfoPopupViewController
+<img src = "https://user-images.githubusercontent.com/74225754/134793517-e67dc8ea-9f5b-4f15-a897-d64e8a593ba5.gif" width="30%" height="30%"> 
+
+* 개발 문서를 확인할 수 있는 팝업뷰
+* ViewController 를 만들어 가운데 있는 View 의 background는 white 로 하고 그 외에는 alpha 값을 변경하여 팝업된 화면처럼 구성함
+```swift
+view.backgroundColor = .init(white: 0, alpha: 0.3)
+// view에 넣는 순서 중요
+view.initAutoLayout(UIViews: [backButton, popUpView])
+popUpView.layer.cornerRadius = 20
+popUpView.backgroundColor = .white
+```
+
+## WebViewController
+<img src = "https://user-images.githubusercontent.com/74225754/134793509-b279631e-9e47-4d8c-9ca9-3efedf288ad5.gif" width="30%" height="30%"> 
+
+* `InfoPopupViewController` 에서 버튼을 누르면 modal 로 나옴
+* 우측 상단에 X 버튼으로 이전 화면으로 이동 가능
+
+
+
+## InfoDetailUseViewController
+<img src = "https://user-images.githubusercontent.com/74225754/134793456-541e4e66-ac1b-4ef6-abdd-f7ae5373706d.gif" width="30%" height="30%"> 
+
+* 간단한 사용법에 대한 설명
+* `InfoDetailTeamViewController` 와 동일한 방식으로 구현
+
 
 ## ChatViewController
 
