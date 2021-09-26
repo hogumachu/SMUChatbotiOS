@@ -96,7 +96,7 @@ class InfoPopupViewController: BaseViewController {
         iOSButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: false, completion: nil)
-                self?.coordinator?.loadWebViewController("https://github.com/hogumachu/ToyProjects")
+                self?.coordinator?.loadWebViewController("https://github.com/hogumachu/SMUChatbotiOS")
             })
             .disposed(by: disposeBag)
 
