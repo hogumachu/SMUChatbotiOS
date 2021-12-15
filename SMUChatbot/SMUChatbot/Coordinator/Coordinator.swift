@@ -2,27 +2,27 @@ import UIKit
 
 class Coordinator {
     struct Dependency {
-        let mainViewControllerFactory: () -> MainViewController
-        let chatViewControllerFactory: () -> ChatViewController
-        let infoViewControllerFactory: () -> InfoViewController
-        let infoDetailTeamViewControllerFactory: () -> InfoDetailTeamViewController
-        let infoDetailUseViewControllerFactory: () -> InfoDetailUseViewController
-        let infoPopupViewControllerFactory: () -> InfoPopupViewController
-        let webViewControllerFactory: (_ url: String) -> WebViewController
+        let mainViewControllerFactory: (MainViewController.Dependency) -> MainViewController
+        let chatViewControllerFactory: (ChatViewController.Dependency) -> ChatViewController
+        let infoViewControllerFactory: (InfoViewController.Dependency) -> InfoViewController
+        let infoDetailTeamViewControllerFactory: (InfoDetailTeamViewController.Dependency) -> InfoDetailTeamViewController
+        let infoDetailUseViewControllerFactory: (InfoDetailUseViewController.Dependency) -> InfoDetailUseViewController
+        let infoPopupViewControllerFactory: (InfoPopupViewController.Dependency) -> InfoPopupViewController
+        let webViewControllerFactory: (WebViewController.Dependency) -> WebViewController
     }
     
     var navigationController: UINavigationController?
     
-    let rootViewController: MainViewController
-    let chatViewControllerFactory: () -> ChatViewController
-    let infoViewControllerFactory: () -> InfoViewController
-    let infoDetailTeamViewControllerFactory: () -> InfoDetailTeamViewController
-    let infoDetailUseViewControllerFactory: () -> InfoDetailUseViewController
-    let infoPopupViewControllerFactory: () -> InfoPopupViewController
-    let webViewControllerFactory: (_ url: String) -> WebViewController
+    let mainViewControllerFactory: (MainViewController.Dependency) -> MainViewController
+    let chatViewControllerFactory: (ChatViewController.Dependency) -> ChatViewController
+    let infoViewControllerFactory: (InfoViewController.Dependency) -> InfoViewController
+    let infoDetailTeamViewControllerFactory: (InfoDetailTeamViewController.Dependency) -> InfoDetailTeamViewController
+    let infoDetailUseViewControllerFactory: (InfoDetailUseViewController.Dependency) -> InfoDetailUseViewController
+    let infoPopupViewControllerFactory: (InfoPopupViewController.Dependency) -> InfoPopupViewController
+    let webViewControllerFactory: (WebViewController.Dependency) -> WebViewController
     
-    required init(dependency: Dependency, payload: ()) {
-        rootViewController = dependency.mainViewControllerFactory()
+    required init(dependency: Dependency) {
+        mainViewControllerFactory = dependency.mainViewControllerFactory
         chatViewControllerFactory = dependency.chatViewControllerFactory
         infoViewControllerFactory = dependency.infoViewControllerFactory
         infoDetailTeamViewControllerFactory = dependency.infoDetailTeamViewControllerFactory
@@ -32,14 +32,13 @@ class Coordinator {
     }
     
     func start() {
-        rootViewController.coordinator = self
+        let vc = mainViewControllerFactory(.init(viewModel: .init(), coordinator: self))
         navigationController?.navigationBar.isHidden = true
-        navigationController?.setViewControllers([rootViewController], animated: false)
+        navigationController?.setViewControllers([vc], animated: false)
     }
     
     func gotoInfoViewController() {
-        let vc = infoViewControllerFactory()
-        vc.coordinator = self
+        let vc = infoViewControllerFactory(.init(viewModel: .init(), coordinator: self))
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -50,16 +49,13 @@ class Coordinator {
     func infoDetailViewSelected(cellNumber: Int) {
         switch cellNumber {
         case 0:
-            let vc = infoDetailTeamViewControllerFactory()
-            vc.coordinator = self
+            let vc = infoDetailTeamViewControllerFactory(.init(viewModel: .init(), coordinator: self))
             navigationController?.pushViewController(vc, animated: true)
         case 1:
-            let vc = infoDetailUseViewControllerFactory()
-            vc.coordinator = self
+            let vc = infoDetailUseViewControllerFactory(.init(viewModel: .init(), coordinator: self))
             navigationController?.pushViewController(vc, animated: true)
         case 2:
-            let vc = chatViewControllerFactory()
-            vc.coordinator = self
+            let vc = chatViewControllerFactory(.init(viewModel: .init(), coordinator: self))
             navigationController?.pushViewController(vc, animated: true)
         default:
             print("Cell Select Error", #function)
@@ -67,15 +63,13 @@ class Coordinator {
     }
     
     func infoPopup() {
-        let vc = infoPopupViewControllerFactory()
-        vc.coordinator = self
+        let vc = infoPopupViewControllerFactory(.init(coordinator: self))
         vc.modalPresentationStyle = .overCurrentContext
         navigationController?.present(vc, animated: false, completion: nil)
     }
     
     func loadWebViewController(_ url: String) {
-        let vc = webViewControllerFactory(url)
-        vc.coordinator = self
+        let vc = webViewControllerFactory(.init(url: url, coordiantor: self))
         vc.modalPresentationStyle = .overCurrentContext
         navigationController?.present(vc, animated: true, completion: nil)
     }

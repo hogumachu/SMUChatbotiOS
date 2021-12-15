@@ -3,13 +3,16 @@ import RxSwift
 import SnapKit
 import WebKit
 
-class WebViewController: BaseViewController {
+class WebViewController: UIViewController {
     struct Dependency {
         let url: String
+        let coordiantor: Coordinator
     }
     
     // MARK: - Properties
     
+    let coordinator: Coordinator
+    private let disposeBag = DisposeBag()
     let url: String
     let closeButton: UIButton = {
         let uiButton = UIButton()
@@ -24,8 +27,9 @@ class WebViewController: BaseViewController {
     
     // MARK: - Lifecycles
     
-    init(dependency: Dependency, payload: ()) {
+    init(dependency: Dependency) {
         self.url = dependency.url
+        self.coordinator = dependency.coordiantor
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -35,12 +39,14 @@ class WebViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureUI()
         configureWebView()
+        subscribe()
     }
     
     // MARK: Configures
     
-    override func configureUI() {
+    private func configureUI() {
         view.initAutoLayout(UIViews: [webView, closeButton])
         view.backgroundColor = .white
         
@@ -55,7 +61,7 @@ class WebViewController: BaseViewController {
         }
     }
     
-    func configureWebView() {
+    private func configureWebView() {
         let url = URL(string: url)
         let request = URLRequest(url: url!)
         webView.load(request)
@@ -63,7 +69,7 @@ class WebViewController: BaseViewController {
     
     // MARK: - Subscribes
     
-    override func subscribe() {
+    private func subscribe() {
         closeButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true, completion: nil)

@@ -3,21 +3,25 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
-class InfoViewController: BaseViewController {
+class InfoViewController: UIViewController {
     struct Dependency {
         let viewModel: InfoViewModel
+        let coordinator: Coordinator
     }
     
     // MARK: - Properties
     
     let viewModel: InfoViewModel
+    let coordinator: Coordinator
+    private let disposeBag = DisposeBag()
     lazy var collectionObservable = Observable.of(viewModel.info)
     let listCollectionView = ListCollectionView()
     
     // MARK: - Lifecycles
     
-    init(dependency: Dependency, payload: ()) {
+    init(dependency: Dependency) {
         self.viewModel = dependency.viewModel
+        self.coordinator = dependency.coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -27,11 +31,13 @@ class InfoViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureUI()
+        subscribe()
     }
     
     // MARK: - Configures
     
-    override func configureUI() {
+    private func configureUI() {
         listCollectionView.register(InfoCollectionViewCell.self, forCellWithReuseIdentifier: InfoCollectionViewCell.identifier)
         view.initAutoLayout(UIViews: [listCollectionView])
         view.backgroundColor = .white
@@ -45,16 +51,17 @@ class InfoViewController: BaseViewController {
     
     // MARK: - Subscribes
     
-    override func subscribe() {
-        collectionObservable.bind(to: listCollectionView.rx.items(cellIdentifier: InfoCollectionViewCell.identifier, cellType: InfoCollectionViewCell.self)) { index, item, cell in
-            cell.titleLabel.text = item.title
-            cell.detailLabel.text = item.detailInfo
-            cell.imageView.backgroundColor = item.color
-            cell.imageTitleLabel.text = item.title
-        }
-        .disposed(by: disposeBag)
-
+    private func subscribe() {
         listCollectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+        
+        collectionObservable
+            .bind(to: listCollectionView.rx.items(cellIdentifier: InfoCollectionViewCell.identifier, cellType: InfoCollectionViewCell.self)) { index, item, cell in
+                cell.titleLabel.text = item.title
+                cell.detailLabel.text = item.detailInfo
+                cell.imageView.backgroundColor = item.color
+                cell.imageTitleLabel.text = item.title
+            }
             .disposed(by: disposeBag)
     }
     
@@ -79,6 +86,6 @@ extension InfoViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        coordinator?.infoDetailViewSelected(cellNumber: indexPath.row)
+        coordinator.infoDetailViewSelected(cellNumber: indexPath.row)
     }
 }

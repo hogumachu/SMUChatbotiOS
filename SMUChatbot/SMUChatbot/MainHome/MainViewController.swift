@@ -2,22 +2,26 @@ import UIKit
 import RxSwift
 import SnapKit
 
-class MainViewController: BaseViewController {
+class MainViewController: UIViewController {
     struct Dependency {
         let viewModel: MainViewModel
+        let coordinator: Coordinator
     }
     
     // MARK: - Properties
     
+    private let disposeBag = DisposeBag()
     let viewModel: MainViewModel
+    let coordinator: Coordinator
     let smuLabel = HeavyTitleLabel()
     let capstoneLabel = HeavyTitleLabel()
     let teamNameLabel = HeavyTitleLabel()
     
     // MARK: - Lifecycles
     
-    init(dependency: Dependency, payload: ()) {
-        viewModel = dependency.viewModel
+    init(dependency: Dependency) {
+        self.viewModel = dependency.viewModel
+        self.coordinator = dependency.coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -31,9 +35,14 @@ class MainViewController: BaseViewController {
         nextViewController()
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+    }
+    
     // MARK: - Configures
     
-    override func configureUI() {
+    private func configureUI() {
         smuLabel.text = "상명대학교"
         smuLabel.textColor = .white
         smuLabel.alpha = 0
@@ -81,7 +90,7 @@ class MainViewController: BaseViewController {
     func gotoInfoView() -> Observable<Void> {
         return Observable<Void>.create { [unowned self] observer in
             observer.onNext(())
-            coordinator?.gotoInfoViewController()
+            coordinator.gotoInfoViewController()
             observer.onCompleted()
             
             return Disposables.create()

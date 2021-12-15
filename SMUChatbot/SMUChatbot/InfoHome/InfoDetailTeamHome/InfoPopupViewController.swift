@@ -2,10 +2,16 @@ import UIKit
 import RxSwift
 import SnapKit
 
-class InfoPopupViewController: BaseViewController {
+class InfoPopupViewController: UIViewController {
+    struct Dependency {
+        let coordinator: Coordinator
+    }
+    
     
     // MARK: - Properties
     
+    let coordinator: Coordinator
+    private let disposeBag = DisposeBag()
     let popUpView = UIView()
     let backButton = UIButton()
     let iOSButton = UIButton()
@@ -35,11 +41,27 @@ class InfoPopupViewController: BaseViewController {
         return label
     }()
     
+    // MARK: Lifecycle
+    
+    init(dependency: Dependency) {
+        self.coordinator = dependency.coordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        subscribe()
+    }
+    
     // MARK: - Configures
     
-    override func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .init(white: 0, alpha: 0.3)
-        // view에 넣는 순서 중요
         view.initAutoLayout(UIViews: [backButton, popUpView])
         popUpView.layer.cornerRadius = 20
         popUpView.backgroundColor = .white
@@ -92,18 +114,18 @@ class InfoPopupViewController: BaseViewController {
     
     // MARK: - Subscribes
     
-    override func subscribe() {
+    private func subscribe() {
         iOSButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: false, completion: nil)
-                self?.coordinator?.loadWebViewController("https://github.com/hogumachu/SMUChatbotiOS")
+                self?.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbotiOS")
             })
             .disposed(by: disposeBag)
 
         djangoButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: false, completion: nil)
-                self?.coordinator?.loadWebViewController("https://github.com/hogumachu/SMUChatbot")
+                self?.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbot")
             })
             .disposed(by: disposeBag)
         

@@ -3,14 +3,17 @@ import RxSwift
 import SnapKit
 import Kingfisher
 
-class InfoDetailUseViewController: BaseViewController {
+class InfoDetailUseViewController: UIViewController {
     struct Dependency {
         let viewModel: InfoDetailUseViewModel
+        let coordinator: Coordinator
     }
     
     // MARK: - Properties
     
     let viewModel: InfoDetailUseViewModel
+    let coordinator: Coordinator
+    private let disposeBag = DisposeBag()
     let imageView = AnimatedImageView()
     let previousButton: UIButton = {
         let button = UIButton()
@@ -44,8 +47,9 @@ class InfoDetailUseViewController: BaseViewController {
     
     // MARK: - Lifecycles
     
-    init(dependency: Dependency, payload: ()) {
+    init(dependency: Dependency) {
         self.viewModel = dependency.viewModel
+        self.coordinator = dependency.coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -55,7 +59,9 @@ class InfoDetailUseViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureUI()
         configurePages()
+        subscribe()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -65,7 +71,7 @@ class InfoDetailUseViewController: BaseViewController {
     
     // MARK: - Configures
     
-    override func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .white
         view.initAutoLayout(UIViews: [imageView, descripLabel, previousButton, nextButton])
         imageView.contentMode = .scaleAspectFit
@@ -97,14 +103,14 @@ class InfoDetailUseViewController: BaseViewController {
         
     }
     
-    func configurePages() {
+    private func configurePages() {
         imageView.kf.setImage(with: viewModel.downloadImage(urlString: viewModel.info[currentPage].imageUrlString))
         descripLabel.text = viewModel.info[currentPage].description
     }
     
     // MARK: - Subscribes
     
-    override func subscribe() {
+    private func subscribe() {
         nextButton.rx.tap
             .subscribe(onNext: { [unowned self] in
                 buttonAction(1)
@@ -120,7 +126,7 @@ class InfoDetailUseViewController: BaseViewController {
     
     // MARK: - helper
     
-    func buttonAction(_ num: Int) {
+    private func buttonAction(_ num: Int) {
         let order = viewModel.changePage(next: currentPage + num)
         switch order {
         case .inPage:
@@ -130,7 +136,7 @@ class InfoDetailUseViewController: BaseViewController {
             navigationController?.popViewController(animated: true)
         case .chatViewController:
             navigationController?.popViewController(animated: false)
-            coordinator?.infoDetailViewSelected(cellNumber: 2)
+            coordinator.infoDetailViewSelected(cellNumber: 2)
         }
     }
 }

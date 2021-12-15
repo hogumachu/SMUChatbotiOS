@@ -3,16 +3,19 @@ import RxSwift
 import SnapKit
 import Kingfisher
 
-class InfoDetailTeamViewController: BaseViewController {
+class InfoDetailTeamViewController: UIViewController {
     struct Dependency {
         let viewModel: InfoDetailTeamViewModel
+        let coordinator: Coordinator
     }
     
     // MARK: - Properties
     
     let viewModel: InfoDetailTeamViewModel
-    let imageView = AnimatedImageView()
-    let nextButton: UIButton = {
+    let coordinator: Coordinator
+    private let disposeBag = DisposeBag()
+    private let imageView = AnimatedImageView()
+    private let nextButton: UIButton = {
         let button = UIButton()
         button.setTitle("  다음  ", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
@@ -37,8 +40,9 @@ class InfoDetailTeamViewController: BaseViewController {
     
     // MARK: - Lifecycles
     
-    init(dependency: Dependency, payload: ()) {
+    init(dependency: Dependency) {
         self.viewModel = dependency.viewModel
+        self.coordinator = dependency.coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -48,12 +52,14 @@ class InfoDetailTeamViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureUI()
         configurePages()
+        subscribe()
     }
     
     // MARK: - Configures
     
-    override func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .white
         view.initAutoLayout(UIViews: [imageView, nextButton, infoButton])
         imageView.contentMode = .scaleAspectFit
@@ -78,7 +84,7 @@ class InfoDetailTeamViewController: BaseViewController {
     
     // MARK: - Subscribes
     
-    override func subscribe() {
+    private func subscribe() {
         nextButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.nextButtonAction()
@@ -95,7 +101,7 @@ class InfoDetailTeamViewController: BaseViewController {
     // MARK: - Helper
     
     func infoButtonAction() {
-        coordinator?.infoPopup()
+        coordinator.infoPopup()
     }
     
     func nextButtonAction() {
@@ -106,7 +112,7 @@ class InfoDetailTeamViewController: BaseViewController {
                 infoButton.isHidden = false
             }
         } else {
-            coordinator?.navigationController?.popViewController(animated: true)
+            coordinator.navigationController?.popViewController(animated: true)
         }
     }
 }

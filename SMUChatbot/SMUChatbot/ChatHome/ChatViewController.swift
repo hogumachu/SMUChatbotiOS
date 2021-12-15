@@ -4,14 +4,17 @@ import RxCocoa
 import RxKeyboard
 import SnapKit
 
-class ChatViewController: BaseViewController {
+class ChatViewController: UIViewController {
     struct Dependency {
         let viewModel: ChatViewModel
+        let coordinator: Coordinator
     }
     
     // MARK: - Properties
     
     let viewModel: ChatViewModel
+    let coordiantor: Coordinator
+    private let disposeBag = DisposeBag()
     let chatTextField = ChatTextField()
     let sendButton = SendButton()
     let chatTableView = ChatTableView()
@@ -27,13 +30,20 @@ class ChatViewController: BaseViewController {
     
     // MARK: - Lifecycles
     
-    init(dependency: Dependency, payload: ()) {
+    init(dependency: Dependency) {
         self.viewModel = dependency.viewModel
+        self.coordiantor = dependency.coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        subscribe()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -43,7 +53,7 @@ class ChatViewController: BaseViewController {
     
     // MARK: - Configures
     
-    override func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .white
         
         self.navigationController?.navigationBar.isHidden = false
@@ -84,7 +94,7 @@ class ChatViewController: BaseViewController {
     
     // MARK: - Subscribes
     
-    override func subscribe() {
+    private func subscribe() {
         viewModel.messageRelay.bind(to: chatTableView.rx.items) { [weak self] tableViewCell, row, item -> UITableViewCell in
             if let can = self?.viewModel.canScrollBottom() {
                 if can {

@@ -4,45 +4,42 @@ struct AppDependency {
 
 extension AppDependency {
     static func resolve() -> AppDependency {
-        let mainViewControllerFactory: () -> MainViewController = {
-            return .init(dependency: .init(viewModel: .init()), payload: ())
+        let mainViewControllerFactory: (MainViewController.Dependency) -> MainViewController = { dependency in
+            return .init(dependency: dependency)
         }
         
-        let chatViewControllerFactory: () -> ChatViewController = {
-            return .init(dependency: .init(viewModel: .init()), payload: ())
+        let chatViewControllerFactory: (ChatViewController.Dependency) -> ChatViewController = { dependency in
+            return .init(dependency: dependency)
         }
         
-        let infoViewControllerFactory: () -> InfoViewController = {
-            return .init(dependency: .init(viewModel: .init()), payload: ())
+        let infoViewControllerFactory: (InfoViewController.Dependency) -> InfoViewController = { dependency in
+            return .init(dependency: dependency)
         }
         
-        let infoDetailTeamViewControllerFactory: () -> InfoDetailTeamViewController = {
-            return .init(dependency: .init(viewModel: .init()), payload: ())
+        let infoDetailTeamViewControllerFactory: (InfoDetailTeamViewController.Dependency) -> InfoDetailTeamViewController = { dependency in
+            return .init(dependency: dependency)
         }
         
-        let infoDetailUseViewControllerFactory: () -> InfoDetailUseViewController = {
-            return .init(dependency: .init(viewModel: .init()), payload: ())
+        let infoDetailUseViewControllerFactory: (InfoDetailUseViewController.Dependency) -> InfoDetailUseViewController = { dependency in
+            return .init(dependency: dependency)
         }
         
-        let infoPopupViewControllerFactory: () -> InfoPopupViewController = {
-            return .init(nibName: nil, bundle: nil)
+        let infoPopupViewControllerFactory: (InfoPopupViewController.Dependency) -> InfoPopupViewController = { dependency in
+            return .init(dependency: dependency)
         }
         
-        let webViewControllerFactory: (_ url: String) -> WebViewController = {url in
-            return .init(dependency: .init(url: url), payload: ())
+        let webViewControllerFactory: (WebViewController.Dependency) -> WebViewController = { dependency in
+            return .init(dependency: dependency)
         }
         
-        let coordinator = Coordinator.init(dependency:
-                                            .init(mainViewControllerFactory: mainViewControllerFactory,
-                                                  chatViewControllerFactory: chatViewControllerFactory,
-                                                  infoViewControllerFactory: infoViewControllerFactory,
-                                                  infoDetailTeamViewControllerFactory : infoDetailTeamViewControllerFactory,
-                                                  infoDetailUseViewControllerFactory: infoDetailUseViewControllerFactory,
-                                                  infoPopupViewControllerFactory: infoPopupViewControllerFactory,
-                                                  webViewControllerFactory: webViewControllerFactory
-                                            ),
-                                           payload: ())
-        
-        return .init(coordinator: coordinator)
+        return .init(coordinator: .init(dependency: .init(
+            mainViewControllerFactory: mainViewControllerFactory,
+            chatViewControllerFactory: chatViewControllerFactory,
+            infoViewControllerFactory: infoViewControllerFactory,
+            infoDetailTeamViewControllerFactory: infoDetailTeamViewControllerFactory,
+            infoDetailUseViewControllerFactory: infoDetailUseViewControllerFactory,
+            infoPopupViewControllerFactory: infoPopupViewControllerFactory,
+            webViewControllerFactory: webViewControllerFactory
+        )))
     }
 }
