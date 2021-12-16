@@ -46,20 +46,19 @@ class Coordinator {
         navigationController?.popViewController(animated: true)
     }
     
-    func infoDetailViewSelected(cellNumber: Int) {
-        switch cellNumber {
-        case 0:
-            let vc = infoDetailTeamViewControllerFactory(.init(viewModel: .init(), coordinator: self))
-            navigationController?.pushViewController(vc, animated: true)
-        case 1:
-            let vc = infoDetailUseViewControllerFactory(.init(viewModel: .init(), coordinator: self))
-            navigationController?.pushViewController(vc, animated: true)
-        case 2:
-            let vc = chatViewControllerFactory(.init(viewModel: .init(), coordinator: self))
-            navigationController?.pushViewController(vc, animated: true)
-        default:
-            print("Cell Select Error", #function)
-        }
+    func pushDetailTeamViewController() {
+        let vc = infoDetailTeamViewControllerFactory(.init(viewModel: .init(), coordinator: self))
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func pushDetailUseViewController() {
+        let vc = infoDetailUseViewControllerFactory(.init(viewModel: .init(), coordinator: self))
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func pushChatViewController() {
+        let vc = chatViewControllerFactory(.init(viewModel: .init(), coordinator: self))
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func infoPopup() {
