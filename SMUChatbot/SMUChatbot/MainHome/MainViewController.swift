@@ -1,26 +1,109 @@
 import UIKit
 import RxSwift
+import RxCocoa
 import SnapKit
 
 class MainViewController: UIViewController {
     struct Dependency {
-        let viewModel: MainViewModel
         let coordinator: Coordinator
     }
     
     // MARK: - Properties
     
+    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
-    let viewModel: MainViewModel
-    let coordinator: Coordinator
-    let smuLabel = HeavyTitleLabel()
-    let capstoneLabel = HeavyTitleLabel()
-    let teamNameLabel = HeavyTitleLabel()
+    private let cardStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 10
+        stack.distribution = .fillEqually
+        stack.alignment = .fill
+        return stack
+    }()
+    private let teamStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 2
+        stack.distribution = .fill
+        stack.alignment = .fill
+        return stack
+    }()
+    private let teamTitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.text = "About Team"
+        return label
+    }()
+    private let teamCardButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .white
+        button.setTitle("채팅해조 팀이란", for: .normal)
+        button.setTitleColor(.smu, for: .normal)
+        button.setTitleColor(.lightGray, for: .highlighted)
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
+        button.layer.cornerRadius = 16
+        button.layer.cornerCurve = .continuous
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 2
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowOffset = CGSize(width: 3, height: 3)
+        button.layer.masksToBounds = false
+        return button
+    }()
+    private let useStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 2
+        stack.distribution = .fill
+        stack.alignment = .fill
+        return stack
+    }()
+    private let useTitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.text = "How To Use"
+        return label
+    }()
+    private let useCardButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .white
+        button.setTitle("챗봇 사용법", for: .normal)
+        button.setTitleColor(.smu, for: .normal)
+        button.setTitleColor(.lightGray, for: .highlighted)
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
+        button.layer.cornerRadius = 16
+        button.layer.cornerCurve = .continuous
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 2
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowOffset = CGSize(width: 3, height: 3)
+        button.layer.masksToBounds = false
+        return button
+    }()
+    private let startButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .smu
+        button.setTitleColor(.white, for: .normal)
+        button.setTitle("챗봇 시작하기", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
+        button.layer.cornerRadius = 8
+        button.layer.cornerCurve = .continuous
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 2
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowOffset = CGSize(width: 3, height: 3)
+        button.layer.masksToBounds = false
+        return button
+    }()
+    
     
     // MARK: - Lifecycles
     
     init(dependency: Dependency) {
-        self.viewModel = dependency.viewModel
         self.coordinator = dependency.coordinator
         super.init(nibName: nil, bundle: nil)
     }
@@ -29,71 +112,78 @@ class MainViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        nextViewController()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        bind()
     }
     
     // MARK: - Configures
     
     private func configureUI() {
-        smuLabel.text = "상명대학교"
-        smuLabel.textColor = .white
-        smuLabel.alpha = 0
+        view.backgroundColor = .systemGray4
+        view.addSubview(cardStackView)
+        view.addSubview(startButton)
         
-        capstoneLabel.text = "캡스톤디자인"
-        capstoneLabel.textColor = .white
-        capstoneLabel.alpha = 0
+        cardStackView.addArrangedSubview(teamStackView)
+        cardStackView.addArrangedSubview(useStackView)
         
-        teamNameLabel.text = "채팅해조"
-        teamNameLabel.textColor = .white
-        teamNameLabel.alpha = 0
+        teamStackView.addArrangedSubview(teamTitleLabel)
+        teamStackView.addArrangedSubview(teamCardButton)
         
-        view.backgroundColor = .smu
-        view.initAutoLayout(UIViews: [smuLabel, capstoneLabel, teamNameLabel])
+        useStackView.addArrangedSubview(useTitleLabel)
+        useStackView.addArrangedSubview(useCardButton)
         
-        smuLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+        teamTitleLabel.snp.makeConstraints {
+            $0.height.equalTo(50)
+        }
+        
+        useTitleLabel.snp.makeConstraints {
+            $0.height.equalTo(50)
+        }
+        
+        cardStackView.snp.makeConstraints {
+            $0.top.leading.equalTo(view.safeAreaLayoutGuide).offset(10)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide).offset(-10)
+            $0.bottom.equalTo(startButton.snp.top).offset(-20)
+        }
+        
+        startButton.snp.makeConstraints {
             $0.leading.equalTo(view.safeAreaLayoutGuide).offset(10)
-            $0.trailing.lessThanOrEqualTo(view.safeAreaLayoutGuide).offset(-20)
-        }
-        
-        capstoneLabel.snp.makeConstraints {
-            $0.top.equalTo(smuLabel.snp.bottom).offset(5)
-            $0.leading.trailing.equalTo(smuLabel)
-        }
-        
-        teamNameLabel.snp.makeConstraints {
-            $0.top.equalTo(capstoneLabel.snp.bottom).offset(5)
-            $0.leading.trailing.equalTo(capstoneLabel)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide).offset(-10)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-10)
+            $0.height.equalTo(50)
         }
     }
     
-    // MARK: - Subscribe
+    // MARK: - Bind
     
-    func nextViewController() {
-        Observable.concat([
-            viewModel.appear(smuLabel, duration: 1),
-            viewModel.appear(capstoneLabel, duration: 1),
-            viewModel.appear(teamNameLabel, duration: 1),
-            gotoInfoView()
-        ]).subscribe()
-        .disposed(by: disposeBag)
-    }
-    
-    func gotoInfoView() -> Observable<Void> {
-        return Observable<Void>.create { [unowned self] observer in
-            observer.onNext(())
-            coordinator.gotoInfoViewController()
-            observer.onCompleted()
-            
-            return Disposables.create()
-        }
+    private func bind() {
+        teamCardButton.rx.tap
+            .withUnretained(coordinator)
+            .bind(
+                onNext: { coordinator, _ in
+                    coordinator.pushDetailTeamViewController()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        useCardButton.rx.tap
+            .withUnretained(coordinator)
+            .bind(
+                onNext: { coordinator, _ in
+                    coordinator.pushDetailUseViewController()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        startButton.rx.tap
+            .withUnretained(coordinator)
+            .bind(
+                onNext: { coordinator, _ in
+                    coordinator.pushChatViewController()
+                }
+            )
+            .disposed(by: disposeBag)
     }
 }
