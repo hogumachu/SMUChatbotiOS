@@ -11,15 +11,15 @@ class WebViewController: UIViewController {
     
     // MARK: - Properties
     
-    let coordinator: Coordinator
+    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
-    let url: String
-    let closeButton: UIButton = {
+    private let url: String
+    private let closeButton: UIButton = {
         let uiButton = UIButton()
         uiButton.setImage(UIImage(named: "closeImage"), for: .normal)
         return uiButton
     }()
-    lazy var webView: WKWebView = {
+    private lazy var webView: WKWebView = {
         let webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         webView.uiDelegate = self
         return webView
@@ -71,9 +71,12 @@ class WebViewController: UIViewController {
     
     private func subscribe() {
         closeButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.dismiss(animated: true, completion: nil)
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.dismiss(animated: true, completion: nil)
+                }
+            )
             .disposed(by: disposeBag)
     }
 }

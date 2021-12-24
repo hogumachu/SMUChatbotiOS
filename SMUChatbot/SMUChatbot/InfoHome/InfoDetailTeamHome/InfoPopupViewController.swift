@@ -10,31 +10,31 @@ class InfoPopupViewController: UIViewController {
     
     // MARK: - Properties
     
-    let coordinator: Coordinator
+    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
-    let popUpView = UIView()
-    let backButton = UIButton()
-    let iOSButton = UIButton()
-    let djangoButton = UIButton()
-    let iOSGitImageView: UIImageView = {
+    private let popUpView = UIView()
+    private let backButton = UIButton()
+    private let iOSButton = UIButton()
+    private let djangoButton = UIButton()
+    private let iOSGitImageView: UIImageView = {
         let uiImageView = UIImageView(image: UIImage(named: "github_logo"))
         return uiImageView
     }()
-    let djangoGitImageView: UIImageView = {
+    private let djangoGitImageView: UIImageView = {
         let uiImageView = UIImageView(image: UIImage(named: "github_logo"))
         return uiImageView
     }()
-    let iOSLabel: UILabel = {
+    private let iOSLabel: UILabel = {
         let label = UILabel()
         label.text = "iOS"
         return label
     }()
-    let djangoLabel: UILabel = {
+    private let djangoLabel: UILabel = {
         let label = UILabel()
         label.text = "Django"
         return label
     }()
-    let documentLabel: UILabel = {
+    private let documentLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 50, weight: .heavy)
         label.text = "개발 문서 보기"
@@ -115,24 +115,37 @@ class InfoPopupViewController: UIViewController {
     // MARK: - Subscribes
     
     private func subscribe() {
+        
+        // TODO: - URL 을 따로 빼기 (ViewController 가 갖고 있는 것은 아닌 것 같음
+        // vc.dismiss 보다는 coordinator 에게 모든 권한을 위임하자 ->
+        // 결국 화면 전환을 Coordinator 에게 맡겼는데 viewController 가 하고 있는 것도 이상함
         iOSButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.dismiss(animated: false, completion: nil)
-                self?.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbotiOS")
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.dismiss(animated: false, completion: nil)
+                    vc.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbotiOS")
+                }
+            )
             .disposed(by: disposeBag)
 
         djangoButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.dismiss(animated: false, completion: nil)
-                self?.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbot")
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.dismiss(animated: false, completion: nil)
+                    vc.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbot")
+                }
+            )
             .disposed(by: disposeBag)
         
         backButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.dismiss(animated: false, completion: nil)
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.dismiss(animated: false, completion: nil)
+                }
+            )
             .disposed(by: disposeBag)
     }
 }

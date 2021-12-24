@@ -11,11 +11,11 @@ class InfoDetailUseViewController: UIViewController {
     
     // MARK: - Properties
     
-    let viewModel: InfoDetailUseViewModel
-    let coordinator: Coordinator
+    private let viewModel: InfoDetailUseViewModel
+    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
-    let imageView = AnimatedImageView()
-    let previousButton: UIButton = {
+    private let imageView = AnimatedImageView()
+    private let previousButton: UIButton = {
         let button = UIButton()
         button.setTitle("  이전  ", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
@@ -25,7 +25,7 @@ class InfoDetailUseViewController: UIViewController {
         button.backgroundColor = .smu
         return button
     }()
-    let nextButton: UIButton = {
+    private let nextButton: UIButton = {
         let button = UIButton()
         button.setTitle("  다음  ", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
@@ -35,8 +35,8 @@ class InfoDetailUseViewController: UIViewController {
         button.backgroundColor = .smu
         return button
     }()
-    var currentPage = 0
-    let descripLabel: UILabel = {
+    private var currentPage = 0
+    private let descripLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .bold)
         label.textColor = .smu
@@ -112,15 +112,21 @@ class InfoDetailUseViewController: UIViewController {
     
     private func subscribe() {
         nextButton.rx.tap
-            .subscribe(onNext: { [unowned self] in
-                buttonAction(1)
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.buttonAction(1)
+                }
+            )
             .disposed(by: disposeBag)
         
         previousButton.rx.tap
-            .subscribe(onNext: { [unowned self] in
-                buttonAction(-1)
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.buttonAction(-1)
+                }
+            )
             .disposed(by: disposeBag)
     }
     

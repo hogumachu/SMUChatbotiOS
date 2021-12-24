@@ -11,8 +11,8 @@ class InfoDetailTeamViewController: UIViewController {
     
     // MARK: - Properties
     
-    let viewModel: InfoDetailTeamViewModel
-    let coordinator: Coordinator
+    private let viewModel: InfoDetailTeamViewModel
+    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
     private let imageView = AnimatedImageView()
     private let nextButton: UIButton = {
@@ -25,7 +25,7 @@ class InfoDetailTeamViewController: UIViewController {
         button.backgroundColor = .smu
         return button
     }()
-    let infoButton: UIButton = {
+    private let infoButton: UIButton = {
         let button = UIButton()
         button.setTitle("  정보  ", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
@@ -36,7 +36,7 @@ class InfoDetailTeamViewController: UIViewController {
         button.isHidden = true
         return button
     }()
-    var currentPage = 0
+    private var currentPage = 0
     
     // MARK: - Lifecycles
     
@@ -78,7 +78,7 @@ class InfoDetailTeamViewController: UIViewController {
         }
     }
     
-    func configurePages() {
+    private func configurePages() {
         imageView.kf.setImage(with: viewModel.downloadImage(urlString: viewModel.info[currentPage]))
     }
     
@@ -86,25 +86,31 @@ class InfoDetailTeamViewController: UIViewController {
     
     private func subscribe() {
         nextButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.nextButtonAction()
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.nextButtonAction()
+                }
+            )
             .disposed(by: disposeBag)
         
         infoButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.infoButtonAction()
-            })
+            .withUnretained(self)
+            .bind(
+                onNext: { vc, _ in
+                    vc.infoButtonAction()
+                }
+            )
             .disposed(by: disposeBag)
     }
     
     // MARK: - Helper
     
-    func infoButtonAction() {
+    private func infoButtonAction() {
         coordinator.infoPopup()
     }
     
-    func nextButtonAction() {
+    private func nextButtonAction() {
         if viewModel.changePage(next: currentPage + 1) {
             currentPage += 1
             configurePages()
@@ -112,7 +118,7 @@ class InfoDetailTeamViewController: UIViewController {
                 infoButton.isHidden = false
             }
         } else {
-            coordinator.navigationController?.popViewController(animated: true)
+            coordinator.navigationController.popViewController(animated: true)
         }
     }
 }
