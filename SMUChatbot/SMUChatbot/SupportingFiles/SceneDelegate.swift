@@ -10,13 +10,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         window = UIWindow(windowScene: scene)
-        let navigationController = UINavigationController()
-        navigationController.navigationItem.setHidesBackButton(true, animated: false)
-        let coordinator = AppDependency.resolve().coordinator
-        coordinator.navigationController = navigationController
-        coordinator.start()
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+        
+        let appDependency = AppDependency.resolve(window: window!)
+        
+        appDependency.start()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

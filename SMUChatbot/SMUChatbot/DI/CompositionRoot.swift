@@ -1,9 +1,16 @@
+import UIKit
+
 struct AppDependency {
+    let window: UIWindow
     let coordinator: Coordinator
 }
 
 extension AppDependency {
-    static func resolve() -> AppDependency {
+    static func resolve(window: UIWindow) -> AppDependency {
+        let navigationController: UINavigationController = {
+            return .init(nibName: nil, bundle: nil)
+        }()
+        
         let mainViewControllerFactory: (MainViewController.Dependency) -> MainViewController = { dependency in
             return .init(dependency: dependency)
         }
@@ -12,9 +19,6 @@ extension AppDependency {
             return .init(dependency: dependency)
         }
         
-        let infoViewControllerFactory: (InfoViewController.Dependency) -> InfoViewController = { dependency in
-            return .init(dependency: dependency)
-        }
         
         let infoDetailTeamViewControllerFactory: (InfoDetailTeamViewController.Dependency) -> InfoDetailTeamViewController = { dependency in
             return .init(dependency: dependency)
@@ -32,14 +36,25 @@ extension AppDependency {
             return .init(dependency: dependency)
         }
         
-        return .init(coordinator: .init(dependency: .init(
-            mainViewControllerFactory: mainViewControllerFactory,
-            chatViewControllerFactory: chatViewControllerFactory,
-            infoViewControllerFactory: infoViewControllerFactory,
-            infoDetailTeamViewControllerFactory: infoDetailTeamViewControllerFactory,
-            infoDetailUseViewControllerFactory: infoDetailUseViewControllerFactory,
-            infoPopupViewControllerFactory: infoPopupViewControllerFactory,
-            webViewControllerFactory: webViewControllerFactory
-        )))
+        return .init(
+            window: window,
+            coordinator: .init(
+                dependency: .init(
+                    navigationController: navigationController,
+                    mainViewControllerFactory: mainViewControllerFactory,
+                    chatViewControllerFactory: chatViewControllerFactory,
+                    infoDetailTeamViewControllerFactory: infoDetailTeamViewControllerFactory,
+                    infoDetailUseViewControllerFactory: infoDetailUseViewControllerFactory,
+                    infoPopupViewControllerFactory: infoPopupViewControllerFactory,
+                    webViewControllerFactory: webViewControllerFactory
+                )
+            )
+        )
+    }
+    
+    func start() {
+        coordinator.start()
+        window.rootViewController = coordinator.navigationController
+        window.makeKeyAndVisible()
     }
 }
