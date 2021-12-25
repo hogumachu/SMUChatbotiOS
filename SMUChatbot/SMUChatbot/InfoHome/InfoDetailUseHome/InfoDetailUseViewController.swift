@@ -115,7 +115,7 @@ class InfoDetailUseViewController: UIViewController {
             .withUnretained(self)
             .bind(
                 onNext: { vc, _ in
-                    vc.buttonAction(1)
+                    vc.nextButtonDidTap()
                 }
             )
             .disposed(by: disposeBag)
@@ -124,7 +124,7 @@ class InfoDetailUseViewController: UIViewController {
             .withUnretained(self)
             .bind(
                 onNext: { vc, _ in
-                    vc.buttonAction(-1)
+                    vc.previousButtonDidTap()
                 }
             )
             .disposed(by: disposeBag)
@@ -132,11 +132,25 @@ class InfoDetailUseViewController: UIViewController {
     
     // MARK: - helper
     
-    private func buttonAction(_ num: Int) {
-        let order = viewModel.changePage(next: currentPage + num)
+    private func nextButtonDidTap() {
+        let order = viewModel.changePage(next: currentPage + 1)
         switch order {
         case .inPage:
-            currentPage += num
+            currentPage += 1
+            configurePages()
+        case .popViewController:
+            navigationController?.popViewController(animated: true)
+        case .chatViewController:
+            navigationController?.popViewController(animated: false)
+            coordinator.pushChatViewController()
+        }
+    }
+    
+    private func previousButtonDidTap() {
+        let order = viewModel.changePage(next: currentPage - 1)
+        switch order {
+        case .inPage:
+            currentPage -= 1
             configurePages()
         case .popViewController:
             navigationController?.popViewController(animated: true)
