@@ -9,13 +9,12 @@ struct Message {
 }
 
 class ChatViewModel {
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     var messages: [Message] = []
     lazy var messageRelay = BehaviorRelay<[Message]>(value: messages)
     var loadingRelay = BehaviorRelay<Bool>(value: false)
-    var messageCount = 0
-    // TODO: - 추후 로컬이 아닌 서버로 돌리기
-    let baseUrl = "http://127.0.0.1:8000"
+    private var messageCount = 0
+    private let baseUrl = "http://127.0.0.1:8000"
     
     func chatting(sendText text: String){
         messages.append(Message(text: text, isSender: true, dateString: nowDateString()))
