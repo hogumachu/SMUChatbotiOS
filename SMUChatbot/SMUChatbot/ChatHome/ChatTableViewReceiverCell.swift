@@ -5,20 +5,20 @@ import RxSwift
 class ChatTableViewReceiverCell: UITableViewCell {
     static let identifier = "ChatTableViewReceiverCell"
     
-    let disposeBag = DisposeBag()
-    let chatLabel = DetailLabel()
-    let chatBubbleView: UIView = {
+    private let disposeBag = DisposeBag()
+    private let chatLabel = DetailLabel()
+    private let chatBubbleView: UIView = {
         let uiView = UIView()
         uiView.layer.masksToBounds = true
         uiView.layer.cornerRadius = 8
         return uiView
     }()
-    let characterImageView: UIImageView = {
+    private let characterImageView: UIImageView = {
         let uiImageView = UIImageView(image: UIImage(named: "smuImage"))
         uiImageView.clipsToBounds = true
         return uiImageView
     }()
-    let dateLabel: UILabel = {
+    private let dateLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 13)
@@ -34,7 +34,7 @@ class ChatTableViewReceiverCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureUI() {
+    private func configureUI() {
         chatLabel.font = .systemFont(ofSize: 15)
         chatLabel.textColor = .black
         chatLabel.numberOfLines = 0
@@ -75,5 +75,10 @@ class ChatTableViewReceiverCell: UITableViewCell {
             $0.bottom.equalTo(chatBubbleView.snp.bottom).offset(-5)
         }
         
+    }
+    
+    func set(item: Message) {
+        chatLabel.text = item.text
+        dateLabel.text = item.dateString
     }
 }

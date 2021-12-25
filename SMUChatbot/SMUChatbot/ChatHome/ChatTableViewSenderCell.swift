@@ -4,15 +4,15 @@ import RxSwift
 
 class ChatTableViewSenderCell: UITableViewCell {
     static let identifier = "ChatTableViewSenderCell"
-    let disposeBag = DisposeBag()
-    let chatLabel = DetailLabel()
-    let chatBubbleView: UIView = {
+    private let disposeBag = DisposeBag()
+    private let chatLabel = DetailLabel()
+    private let chatBubbleView: UIView = {
         let uiView = UIView()
         uiView.layer.masksToBounds = true
         uiView.layer.cornerRadius = 8
         return uiView
     }()
-    let dateLabel: UILabel = {
+    private let dateLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 13)
@@ -32,7 +32,7 @@ class ChatTableViewSenderCell: UITableViewCell {
         super.layoutSubviews()
     }
     
-    func configureUI() {
+    private func configureUI() {
         chatLabel.font = .systemFont(ofSize: 15)
         chatLabel.textColor = .black
         chatLabel.numberOfLines = 0
@@ -66,6 +66,11 @@ class ChatTableViewSenderCell: UITableViewCell {
             $0.trailing.equalTo(chatBubbleView.snp.leading).offset(-10)
             $0.bottom.equalTo(chatBubbleView.snp.bottom).offset(-5)
         }
+    }
+    
+    func set(item: Message) {
+        chatLabel.text = item.text
+        dateLabel.text = item.dateString
     }
     
 }
