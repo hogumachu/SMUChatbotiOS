@@ -5,15 +5,18 @@ import RxKeyboard
 import SnapKit
 
 class ChatViewController: UIViewController {
+    // MARK: - Dependency
+    
     struct Dependency {
         let viewModel: ChatViewModel
         let coordinator: Coordinator
     }
     
-    // MARK: - Properties
-    
     private let viewModel: ChatViewModel
     private let coordiantor: Coordinator
+    
+    // MARK: - Properties
+    
     private let disposeBag = DisposeBag()
     private let chatTextField = ChatTextField()
     private let sendButton = SendButton()
@@ -43,7 +46,7 @@ class ChatViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        subscribe()
+        bind()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -92,9 +95,9 @@ class ChatViewController: UIViewController {
         }
     }
     
-    // MARK: - Subscribes
+    // MARK: - Bind
     
-    private func subscribe() {
+    private func bind() {
         viewModel
             .messageRelay
             .bind(to: chatTableView.rx.items) { [weak self] tableViewCell, row, item -> UITableViewCell in

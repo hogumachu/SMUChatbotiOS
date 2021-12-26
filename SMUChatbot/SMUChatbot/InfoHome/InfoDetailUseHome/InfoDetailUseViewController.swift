@@ -4,15 +4,19 @@ import SnapKit
 import Kingfisher
 
 class InfoDetailUseViewController: UIViewController {
+    // MARK: - Dependency
+    
     struct Dependency {
         let viewModel: InfoDetailUseViewModel
         let coordinator: Coordinator
     }
     
-    // MARK: - Properties
-    
     private let viewModel: InfoDetailUseViewModel
     private let coordinator: Coordinator
+    
+    // MARK: - Properties
+    
+    private var currentPage = 0
     private let disposeBag = DisposeBag()
     private let imageView = AnimatedImageView()
     private let previousButton: UIButton = {
@@ -35,7 +39,6 @@ class InfoDetailUseViewController: UIViewController {
         button.backgroundColor = .smu
         return button
     }()
-    private var currentPage = 0
     private let descripLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .bold)
@@ -61,7 +64,7 @@ class InfoDetailUseViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configurePages()
-        subscribe()
+        bind()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -108,9 +111,9 @@ class InfoDetailUseViewController: UIViewController {
         descripLabel.text = viewModel.info[currentPage].description
     }
     
-    // MARK: - Subscribes
+    // MARK: - Bind
     
-    private func subscribe() {
+    private func bind() {
         nextButton.rx.tap
             .withUnretained(self)
             .bind(
