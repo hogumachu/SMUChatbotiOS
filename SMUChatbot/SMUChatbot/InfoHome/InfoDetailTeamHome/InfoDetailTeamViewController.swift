@@ -4,19 +4,15 @@ import SnapKit
 import Kingfisher
 
 class InfoDetailTeamViewController: UIViewController {
-    // MARK: - Dependency
-    
     struct Dependency {
         let viewModel: InfoDetailTeamViewModel
         let coordinator: Coordinator
     }
     
-    private let viewModel: InfoDetailTeamViewModel
-    private let coordinator: Coordinator
-    
     // MARK: - Properties
     
-    private var currentPage = 0
+    private let viewModel: InfoDetailTeamViewModel
+    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
     private let imageView = AnimatedImageView()
     private let nextButton: UIButton = {
@@ -40,6 +36,7 @@ class InfoDetailTeamViewController: UIViewController {
         button.isHidden = true
         return button
     }()
+    private var currentPage = 0
     
     // MARK: - Lifecycles
     

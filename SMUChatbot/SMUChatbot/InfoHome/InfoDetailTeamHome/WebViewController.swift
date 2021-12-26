@@ -4,19 +4,16 @@ import SnapKit
 import WebKit
 
 class WebViewController: UIViewController {
-    // MARK: - Dependency
-    
     struct Dependency {
         let url: String
         let coordiantor: Coordinator
     }
     
-    private let coordinator: Coordinator
-    private let url: String
-    
     // MARK: - Properties
     
+    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
+    private let url: String
     private let closeButton: UIButton = {
         let uiButton = UIButton()
         uiButton.setImage(UIImage(named: "closeImage"), for: .normal)
@@ -44,7 +41,7 @@ class WebViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configureWebView()
-        bind()
+        subscribe()
     }
     
     // MARK: Configures
@@ -70,9 +67,9 @@ class WebViewController: UIViewController {
         webView.load(request)
     }
     
-    // MARK: - Bind
+    // MARK: - Subscribes
     
-    private func bind() {
+    private func subscribe() {
         closeButton.rx.tap
             .withUnretained(self)
             .bind(
