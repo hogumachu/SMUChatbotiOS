@@ -5,13 +5,10 @@ class InfoDetailTeamViewModel {
     
     func downloadImage(urlString: String) -> ImageResource? {
         guard let url = URL(string: urlString) else { return nil }
-        let resource = ImageResource(downloadURL: url)
-        return resource
+        return ImageResource(downloadURL: url)
     }
+    
     func changePage(next: Int) -> Bool {
-        if next == info.count {
-            return false
-        }
-        return true
+        return next == info.count ? false : true
     }
 }
