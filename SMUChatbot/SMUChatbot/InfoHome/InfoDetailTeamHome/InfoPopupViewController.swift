@@ -3,14 +3,16 @@ import RxSwift
 import SnapKit
 
 class InfoPopupViewController: UIViewController {
+    // MARK: - Dependency
+    
     struct Dependency {
         let coordinator: Coordinator
     }
     
+    private let coordinator: Coordinator
     
     // MARK: - Properties
     
-    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
     private let popUpView = UIView()
     private let backButton = UIButton()

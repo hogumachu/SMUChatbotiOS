@@ -4,13 +4,16 @@ import RxCocoa
 import SnapKit
 
 class MainViewController: UIViewController {
+    // MARK: - Dependency
+    
     struct Dependency {
         let coordinator: Coordinator
     }
     
+    private let coordinator: Coordinator
+    
     // MARK: - Properties
     
-    private let coordinator: Coordinator
     private let disposeBag = DisposeBag()
     private let cardStackView: UIStackView = {
         let stack = UIStackView()

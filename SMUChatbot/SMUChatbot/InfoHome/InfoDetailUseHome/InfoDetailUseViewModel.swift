@@ -11,8 +11,7 @@ class InfoDetailUseViewModel {
     
     func downloadImage(urlString: String) -> ImageResource? {
         guard let url = URL(string: urlString) else { return nil }
-        let resource = ImageResource(downloadURL: url)
-        return resource
+        return ImageResource(downloadURL: url)
     }
     
     func changePage(next: Int) -> Page {

@@ -1,5 +1,5 @@
 import Foundation
 
-struct content: Codable {
+struct Content: Codable {
     let content: String
 }
