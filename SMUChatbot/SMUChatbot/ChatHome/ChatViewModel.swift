@@ -2,60 +2,42 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-struct Message {
-    let text: String
-    let isSender: Bool
-    let dateString: String
-}
-
 class ChatViewModel {
     private let disposeBag = DisposeBag()
     var messages: [Message] = []
     lazy var messageRelay = BehaviorRelay<[Message]>(value: messages)
     var loadingRelay = BehaviorRelay<Bool>(value: false)
     private var messageCount = 0
-    private let baseUrl = "http://127.0.0.1:8000"
     
     func chatting(sendText text: String){
-        messages.append(Message(text: text, isSender: true, dateString: nowDateString()))
-        messageRelay.accept(messages)
+        sendMessage(text)
         
-        loadingRelay.accept(true)
-        
-        let urlRequest = URLRequest(url: URL(string: baseUrl + "/get_info/?data=\(text)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!)
-        
-        URLSession.shared.rx.data(request: urlRequest)
-            .subscribe(onNext: { [unowned self] data in
-                let text = decodeData(data: data)
-                messages.append(Message(text: text, isSender: false, dateString: nowDateString()))
-                messageRelay.accept(messages)
-                loadingRelay.accept(false)
-            }, onError: { [unowned self] _ in
-                messages.append(Message(text: "챗봇이 작동하지 않고 있습니다.", isSender: false, dateString: nowDateString()))
-                messageRelay.accept(messages)
-                loadingRelay.accept(false)
+        ChattingImpl.shared.execute(text) { [weak self] (result: Result<Content, Error>) in
+            switch result {
+            case .success(let content):
+                self?.receiveMessage(content.content)
+            case .failure(_):
+                self?.receiveMessage()
             }
-            ).disposed(by: disposeBag)
-    }
-    
-    private func nowDateString() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "a hh:mm"
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        let dateString = dateFormatter.string(from: Date())
-        
-        return dateString
-    }
-    
-    private func decodeData(data: Data) -> String {
-        do {
-            let decoder = JSONDecoder()
-            let dataString = try decoder.decode(content.self, from: data)
-            return dataString.content
-        } catch {
-            print(error)
-            return "decodeData Error"
         }
+    }
+    
+    private func sendMessage(_ text: String) {
+        messages.append(Message(text: text, isSender: true, dateString: DateGenerator.nowDateString()))
+        messageRelay.accept(messages)
+        loadingRelay.accept(true)
+    }
+    
+    private func receiveMessage(_ text: String = "챗봇이 작동하지 않고 있습니다.") {
+        let message = Message(
+            text: text,
+            isSender: false,
+            dateString: DateGenerator.nowDateString()
+        )
+        
+        messages.append(message)
+        messageRelay.accept(messages)
+        loadingRelay.accept(false)
     }
     
     func canScrollBottom() -> Bool {
