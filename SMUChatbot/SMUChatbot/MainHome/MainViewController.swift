@@ -103,7 +103,6 @@ class MainViewController: UIViewController {
         return button
     }()
     
-    
     // MARK: - Lifecycles
     
     init(dependency: Dependency) {

@@ -57,7 +57,7 @@ class InfoPopupViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        subscribe()
+        bind()
     }
     
     // MARK: - Configures
@@ -114,19 +114,14 @@ class InfoPopupViewController: UIViewController {
         }
     }
     
-    // MARK: - Subscribes
+    // MARK: - Bind
     
-    private func subscribe() {
-        
-        // TODO: - URL 을 따로 빼기 (ViewController 가 갖고 있는 것은 아닌 것 같음
-        // vc.dismiss 보다는 coordinator 에게 모든 권한을 위임하자 ->
-        // 결국 화면 전환을 Coordinator 에게 맡겼는데 viewController 가 하고 있는 것도 이상함
+    private func bind() {
         iOSButton.rx.tap
             .withUnretained(self)
             .bind(
                 onNext: { vc, _ in
-                    vc.dismiss(animated: false, completion: nil)
-                    vc.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbotiOS")
+                    vc.coordinator.loadWebViewController(vc, type: .iOS)
                 }
             )
             .disposed(by: disposeBag)
@@ -135,8 +130,7 @@ class InfoPopupViewController: UIViewController {
             .withUnretained(self)
             .bind(
                 onNext: { vc, _ in
-                    vc.dismiss(animated: false, completion: nil)
-                    vc.coordinator.loadWebViewController("https://github.com/hogumachu/SMUChatbot")
+                    vc.coordinator.loadWebViewController(vc, type: .django)
                 }
             )
             .disposed(by: disposeBag)

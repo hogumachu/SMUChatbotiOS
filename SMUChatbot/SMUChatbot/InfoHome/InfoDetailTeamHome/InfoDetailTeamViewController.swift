@@ -57,7 +57,7 @@ class InfoDetailTeamViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configurePages()
-        subscribe()
+        bind()
     }
     
     // MARK: - Configures
@@ -85,9 +85,9 @@ class InfoDetailTeamViewController: UIViewController {
         imageView.kf.setImage(with: viewModel.downloadImage(urlString: viewModel.info[currentPage]))
     }
     
-    // MARK: - Subscribes
+    // MARK: - Bind
     
-    private func subscribe() {
+    private func bind() {
         nextButton.rx.tap
             .withUnretained(self)
             .bind(

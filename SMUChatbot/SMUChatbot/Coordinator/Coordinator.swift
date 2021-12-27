@@ -60,9 +60,15 @@ class Coordinator {
         navigationController.present(vc, animated: false, completion: nil)
     }
     
-    func loadWebViewController(_ url: String) {
-        let vc = webViewControllerFactory(.init(url: url, coordiantor: self))
+    func loadWebViewController(_ viewController: UIViewController? = nil, type: WebViewURLType) {
+        viewController?.dismiss(animated: false, completion: nil)
+        let vc = webViewControllerFactory(.init(url: type.rawValue, coordiantor: self))
         vc.modalPresentationStyle = .overCurrentContext
         navigationController.present(vc, animated: true, completion: nil)
+    }
+    
+    enum WebViewURLType: String {
+        case iOS = "https://github.com/hogumachu/SMUChatbotiOS"
+        case django = "https://github.com/hogumachu/SMUChatbot"
     }
 }

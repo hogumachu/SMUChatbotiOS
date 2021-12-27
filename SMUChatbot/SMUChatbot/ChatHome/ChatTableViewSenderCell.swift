@@ -72,5 +72,4 @@ class ChatTableViewSenderCell: UITableViewCell {
         chatLabel.text = item.text
         dateLabel.text = item.dateString
     }
-    
 }
